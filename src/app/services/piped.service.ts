@@ -97,22 +97,64 @@ export class PipedService {
       }
     }).pipe(
       timeout(10000),
-      map(vRes => {
+      switchMap(vRes => {
         const v = vRes.items[0];
-        return {
-          title: v.snippet.title,
-          description: v.snippet.description,
-          uploader: v.snippet.channelTitle,
-          uploaderUrl: v.snippet.channelId,
-          uploaderAvatar: v.snippet.thumbnails?.default?.url ?? '',
-          uploaderSubscriberCount: 0,
-          thumbnailUrl: this.getBestThumb(videoId),
-          duration: this.parseDuration(v.contentDetails?.duration),
-          views: parseInt(v.statistics?.viewCount ?? '0'),
-          likes: parseInt(v.statistics?.likeCount ?? '0'),
-          dislikes: 0,
-          relatedStreams: []
-        };
+        const channelId = v.snippet.channelId;
+
+        return this.http.get<any>(`${this.BASE}/search`, {
+          params: {
+            part: 'snippet',
+            channelId: channelId,
+            type: 'video',
+            maxResults: '12',
+            order: 'viewCount',
+            key: this.KEY
+          }
+        }).pipe(
+          map(rRes => {
+            const related: PipedVideo[] = (rRes.items || [])
+              .filter((r: any) => r.id.videoId !== videoId)
+              .map((r: any) => ({
+                url: `/watch?v=${r.id.videoId}`,
+                title: r.snippet.title,
+                thumbnail: this.getBestThumb(r.id.videoId),
+                uploaderName: r.snippet.channelTitle,
+                uploaderUrl: r.snippet.channelId,
+                uploadedDate: r.snippet.publishedAt?.substring(0, 10),
+                duration: 0,
+                views: 0
+              }));
+
+            return {
+              title: v.snippet.title,
+              description: v.snippet.description,
+              uploader: v.snippet.channelTitle,
+              uploaderUrl: v.snippet.channelId,
+              uploaderAvatar: v.snippet.thumbnails?.default?.url ?? '',
+              uploaderSubscriberCount: 0,
+              thumbnailUrl: this.getBestThumb(videoId),
+              duration: this.parseDuration(v.contentDetails?.duration),
+              views: parseInt(v.statistics?.viewCount ?? '0'),
+              likes: parseInt(v.statistics?.likeCount ?? '0'),
+              dislikes: 0,
+              relatedStreams: related
+            };
+          }),
+          catchError(() => of({
+            title: v.snippet.title,
+            description: v.snippet.description,
+            uploader: v.snippet.channelTitle,
+            uploaderUrl: v.snippet.channelId,
+            uploaderAvatar: v.snippet.thumbnails?.default?.url ?? '',
+            uploaderSubscriberCount: 0,
+            thumbnailUrl: this.getBestThumb(videoId),
+            duration: this.parseDuration(v.contentDetails?.duration),
+            views: parseInt(v.statistics?.viewCount ?? '0'),
+            likes: parseInt(v.statistics?.likeCount ?? '0'),
+            dislikes: 0,
+            relatedStreams: []
+          }))
+        );
       }),
       catchError(() => of({
         title: '', description: '', uploader: '', uploaderUrl: '',

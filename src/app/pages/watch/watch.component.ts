@@ -1,13 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { PipedService, PipedStream } from '../../services/piped.service';
+import { PipedService, PipedStream, PipedVideo } from '../../services/piped.service';
+import { VideoCardComponent } from '../../components/video-card/video-card.component';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-watch',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, VideoCardComponent],
   templateUrl: './watch.component.html',
   styleUrls: ['./watch.component.css']
 })
@@ -17,11 +18,13 @@ export class WatchComponent implements OnInit {
   error = '';
   videoId = '';
   embedUrl: SafeResourceUrl = '';
+  descExpanded = false;
 
   constructor(
     private route: ActivatedRoute,
     public piped: PipedService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -41,11 +44,25 @@ export class WatchComponent implements OnInit {
     );
 
     this.piped.getStream(this.videoId).subscribe({
-      next: (s) => { this.stream = s; this.loading = false; },
+      next: (s) => {
+        this.stream = s;
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
       error: () => {
         this.error = 'No se pudo cargar la información del video.';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
+  }
+
+  get relatedVideos(): PipedVideo[] {
+    return this.stream?.relatedStreams?.slice(0, 12) ?? [];
+  }
+
+  get shortDescription(): string {
+    const desc = this.stream?.description ?? '';
+    return desc.length > 300 ? desc.substring(0, 300) + '...' : desc;
   }
 }

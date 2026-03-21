@@ -1,6 +1,6 @@
 <div class="watch-page">
-  <div class="player-col">
 
+  <div class="player-col">
     <div class="player-wrap">
       <iframe
         *ngIf="embedUrl"
@@ -12,8 +12,13 @@
       ></iframe>
     </div>
 
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+    </div>
+
     <div *ngIf="stream && !loading" class="video-info fade-in">
       <h1 class="video-title">{{ stream.title }}</h1>
+
       <div class="channel-row">
         <img *ngIf="stream.uploaderAvatar"
              [src]="stream.uploaderAvatar"
@@ -21,14 +26,33 @@
              [alt]="stream.uploader" />
         <div class="ch-info">
           <p class="ch-name">{{ stream.uploader }}</p>
-          <p class="ch-subs">{{ piped.formatViews(stream.uploaderSubscriberCount) }} suscriptores</p>
         </div>
         <div class="stats-badges">
           <span class="badge">👁 {{ piped.formatViews(stream.views) }}</span>
           <span class="badge likes">👍 {{ piped.formatViews(stream.likes) }}</span>
         </div>
       </div>
+
+      <div class="description-box" *ngIf="stream.description">
+        <p class="desc-text">{{ descExpanded ? stream.description : shortDescription }}</p>
+        <button
+          *ngIf="stream.description.length > 300"
+          class="desc-toggle"
+          (click)="descExpanded = !descExpanded"
+        >{{ descExpanded ? 'Ver menos' : 'Ver más' }}</button>
+      </div>
     </div>
 
+    <div *ngIf="error" class="error-state">{{ error }}</div>
   </div>
+
+  <div class="related-col" *ngIf="relatedVideos.length > 0">
+    <h3 class="related-title">Relacionados</h3>
+    <app-video-card
+      *ngFor="let v of relatedVideos; let i = index"
+      [video]="v"
+      [style.animation-delay]="(i * 0.05) + 's'"
+    ></app-video-card>
+  </div>
+
 </div>
