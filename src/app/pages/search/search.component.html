@@ -1,0 +1,40 @@
+<div class="search-page">
+  <div class="search-header">
+    <h2 class="query-label">
+      Resultados para: <span class="query-text">"{{ query }}"</span>
+    </h2>
+    <p *ngIf="!loading && videos.length" class="count">
+      {{ videos.length }} videos encontrados
+    </p>
+  </div>
+
+  <div *ngIf="error" class="error-state">
+    <p>{{ error }}</p>
+    <button (click)="search()" class="retry-btn">Reintentar</button>
+  </div>
+
+  <div *ngIf="!error && videos.length === 0 && !loading" class="empty-state">
+    <p>😶 No se encontraron videos para "{{ query }}"</p>
+  </div>
+
+  <div class="video-grid">
+    <ng-container *ngIf="loading">
+      <div *ngFor="let s of skeletons" class="card-skeleton">
+        <div class="skeleton thumb-sk"></div>
+        <div class="skeleton-info">
+          <div class="skeleton avatar-sk"></div>
+          <div class="text-sk">
+            <div class="skeleton line-sk long"></div>
+            <div class="skeleton line-sk short"></div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <app-video-card
+      *ngFor="let v of videos; let i = index"
+      [video]="v"
+      [style.animation-delay]="(i * 0.04) + 's'"
+    ></app-video-card>
+  </div>
+</div>

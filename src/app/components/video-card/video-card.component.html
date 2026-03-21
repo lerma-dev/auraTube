@@ -1,0 +1,30 @@
+<a [routerLink]="['/watch', videoId]" class="card fade-in">
+  <div class="thumbnail-wrap">
+    <img [src]="video.thumbnail" [alt]="video.title"
+         class="thumbnail" loading="lazy" />
+    <span class="duration">{{ piped.formatDuration(video.duration) }}</span>
+    <div class="play-overlay">
+      <span class="play-icon">▶</span>
+    </div>
+  </div>
+
+  <div class="info">
+    <div class="avatar-wrap">
+      <img *ngIf="video.uploaderAvatar"
+           [src]="video.uploaderAvatar"
+           class="avatar"
+           [alt]="video.uploaderName" />
+      <div *ngIf="!video.uploaderAvatar" class="avatar-placeholder">
+        {{ video.uploaderName ? video.uploaderName.charAt(0) : '?' }}
+      </div>
+    </div>
+    <div class="meta">
+      <p class="title truncate" [title]="video.title">{{ video.title }}</p>
+      <p class="channel truncate">{{ video.uploaderName }}</p>
+      <p class="stats">
+        {{ piped.formatViews(video.views) }} vistas
+        <span *ngIf="video.uploadedDate"> · {{ video.uploadedDate }}</span>
+      </p>
+    </div>
+  </div>
+</a>

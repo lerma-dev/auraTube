@@ -1,0 +1,34 @@
+<div class="watch-page">
+  <div class="player-col">
+
+    <div class="player-wrap">
+      <iframe
+        *ngIf="embedUrl"
+        [src]="embedUrl"
+        allow="autoplay; fullscreen"
+        allowfullscreen
+        frameborder="0"
+        class="player-iframe"
+      ></iframe>
+    </div>
+
+    <div *ngIf="stream && !loading" class="video-info fade-in">
+      <h1 class="video-title">{{ stream.title }}</h1>
+      <div class="channel-row">
+        <img *ngIf="stream.uploaderAvatar"
+             [src]="stream.uploaderAvatar"
+             class="ch-avatar"
+             [alt]="stream.uploader" />
+        <div class="ch-info">
+          <p class="ch-name">{{ stream.uploader }}</p>
+          <p class="ch-subs">{{ piped.formatViews(stream.uploaderSubscriberCount) }} suscriptores</p>
+        </div>
+        <div class="stats-badges">
+          <span class="badge">👁 {{ piped.formatViews(stream.views) }}</span>
+          <span class="badge likes">👍 {{ piped.formatViews(stream.likes) }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

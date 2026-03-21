@@ -1,0 +1,108 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-card);
+  border: 1px solid var(--border-card);
+  transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-subtle);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px var(--purple-glow-sm);
+}
+
+.thumbnail-wrap {
+  position: relative;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+  background: var(--bg-hover);
+}
+
+.thumbnail {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.card:hover .thumbnail { transform: scale(1.04); }
+
+.duration {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.play-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(168,85,247,0.15);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.card:hover .play-overlay { opacity: 1; }
+
+.play-icon {
+  font-size: 28px;
+  color: #fff;
+  filter: drop-shadow(0 0 8px rgba(168,85,247,0.8));
+}
+
+.info {
+  display: flex;
+  gap: 10px;
+  padding: 0 12px 14px;
+}
+
+.avatar, .avatar-placeholder {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.avatar-placeholder {
+  background: var(--purple-dim);
+  color: var(--purple-neon);
+  font-weight: 700;
+  font-size: 14px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border-subtle);
+}
+
+.meta { flex: 1; min-width: 0; }
+
+.title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.4;
+  margin-bottom: 3px;
+}
+
+.channel {
+  font-size: 12px;
+  color: var(--purple-neon);
+  font-weight: 500;
+  margin-bottom: 2px;
+}
+
+.stats { font-size: 11px; color: var(--text-muted); }

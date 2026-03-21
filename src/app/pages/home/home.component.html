@@ -1,0 +1,38 @@
+<div class="home">
+  <div class="home-header">
+    <div class="region-tabs">
+      <button
+        *ngFor="let r of regions"
+        [class.active]="r.code === selectedRegion"
+        (click)="setRegion(r.code)"
+        class="region-btn"
+      >{{ r.label }}</button>
+    </div>
+  </div>
+
+  <div *ngIf="error" class="error-state">
+    <p>{{ error }}</p>
+    <button (click)="load()" class="retry-btn">Reintentar</button>
+  </div>
+
+  <div class="video-grid">
+    <ng-container *ngIf="loading">
+      <div *ngFor="let s of skeletons" class="card-skeleton">
+        <div class="skeleton thumb-sk"></div>
+        <div class="skeleton-info">
+          <div class="skeleton avatar-sk"></div>
+          <div class="text-sk">
+            <div class="skeleton line-sk long"></div>
+            <div class="skeleton line-sk short"></div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <app-video-card
+      *ngFor="let v of videos; let i = index"
+      [video]="v"
+      [style.animation-delay]="(i * 0.04) + 's'"
+    ></app-video-card>
+  </div>
+</div>

@@ -1,0 +1,118 @@
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 24px;
+  height: 64px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  backdrop-filter: blur(12px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.brand-icon {
+  width: 34px;
+  height: 34px;
+  background: var(--purple-neon);
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  color: #fff;
+  box-shadow: 0 0 16px var(--purple-glow);
+}
+
+.brand-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: var(--text-primary);
+}
+
+.brand-accent {
+  color: var(--purple-neon);
+}
+
+.search-bar {
+  flex: 1;
+  max-width: 520px;
+  display: flex;
+  border: 1px solid var(--border-subtle);
+  border-radius: 50px;
+  overflow: hidden;
+  background: var(--bg-card);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-bar:focus-within {
+  border-color: var(--purple-neon);
+  box-shadow: 0 0 0 3px var(--purple-glow-sm);
+}
+
+.search-input {
+  flex: 1;
+  padding: 10px 18px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.search-input::placeholder { color: var(--text-muted); }
+
+.search-btn {
+  padding: 0 16px;
+  background: var(--purple-soft);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.2s;
+}
+
+.search-btn:hover { background: var(--purple-neon); }
+
+.nav-links {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.nav-link {
+  padding: 7px 16px;
+  border-radius: 20px;
+  text-decoration: none;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.nav-link:hover {
+  background: var(--bg-hover);
+  color: var(--purple-neon);
+}
+
+@media (max-width: 600px) {
+  .nav-links { display: none; }
+  .search-bar { max-width: 100%; }
+}
+
+.watch-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 24px;
+}

@@ -1,0 +1,94 @@
+/* You can add global styles to this file, and also import other style files */
+/* AuraTube - Global Styles - Mi Música Palette */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Bebas+Neue&display=swap');
+
+:root {
+  /* Mi Música Palette */
+  --bg-primary: #0d0d14;
+  --bg-secondary: #13131f;
+  --bg-card: #1a1a2e;
+  --bg-hover: #1f1f35;
+
+  --purple-neon: #a855f7;
+  --purple-soft: #7c3aed;
+  --purple-dim: #4c1d95;
+  --purple-glow: rgba(168, 85, 247, 0.3);
+  --purple-glow-sm: rgba(168, 85, 247, 0.15);
+
+  --text-primary: #f0e6ff;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+
+  --border-subtle: rgba(168, 85, 247, 0.2);
+  --border-card: rgba(168, 85, 247, 0.1);
+
+  --scrollbar-thumb: #4c1d95;
+  --scrollbar-track: #13131f;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Space Grotesk', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--purple-soft);
+}
+
+/* Utility classes */
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 12px var(--purple-glow); }
+  50%       { box-shadow: 0 0 28px rgba(168, 85, 247, 0.5); }
+}
+
+.fade-in {
+  animation: fadeIn 0.35s ease both;
+}
+
+.skeleton {
+  background: linear-gradient(90deg,
+    var(--bg-card) 25%,
+    var(--bg-hover) 50%,
+    var(--bg-card) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 8px;
+}
