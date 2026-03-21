@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { PipedService, PipedVideo } from '../../services/piped.service';
@@ -16,11 +16,11 @@ export class SearchComponent implements OnInit {
   videos: PipedVideo[] = [];
   loading = false;
   error = '';
-  skeletons = Array(8).fill(0);
 
   constructor(
     private route: ActivatedRoute,
-    private piped: PipedService
+    private piped: PipedService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -37,14 +37,14 @@ export class SearchComponent implements OnInit {
 
     this.piped.search(this.query).subscribe({
       next: (res) => {
-        this.videos = (res.items || []).filter(
-          (v: any) => v.type === 'stream' || v.duration !== undefined
-        ) as PipedVideo[];
+        this.videos = res.items || [];
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: () => {
         this.error = 'Error al buscar. Intenta de nuevo.';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }

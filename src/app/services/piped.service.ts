@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, map, switchMap } from 'rxjs';
+import { Observable, map, catchError, of, timeout, switchMap } from 'rxjs';
 
 export interface PipedVideo {
   url: string;
@@ -38,7 +38,7 @@ export interface SearchResponse {
 
 @Injectable({ providedIn: 'root' })
 export class PipedService {
-  private readonly BASE = 'https://www.googleapis.com/youtube/v3';
+  private readonly BASE = '/youtube/v3';
   private readonly KEY = 'AIzaSyDSr_645BHkDVCSofq5amS95n4LVF9nXAQ';
 
   constructor(private http: HttpClient) {}
@@ -52,7 +52,11 @@ export class PipedService {
         maxResults: '20',
         key: this.KEY
       }
-    }).pipe(map(res => res.items.map((v: any) => this.mapVideo(v))));
+    }).pipe(
+      timeout(10000),
+      map(res => res.items.map((v: any) => this.mapVideo(v))),
+      catchError(() => of([]))
+    );
   }
 
   search(query: string): Observable<SearchResponse> {
@@ -65,6 +69,7 @@ export class PipedService {
         key: this.KEY
       }
     }).pipe(
+      timeout(10000),
       map(res => ({
         items: res.items.map((v: any) => ({
           url: `/watch?v=${v.id.videoId}`,
@@ -78,7 +83,8 @@ export class PipedService {
         })),
         nextpage: '',
         suggestion: ''
-      }))
+      })),
+      catchError(() => of({ items: [], nextpage: '', suggestion: '' }))
     );
   }
 
@@ -90,56 +96,34 @@ export class PipedService {
         key: this.KEY
       }
     }).pipe(
-      switchMap(vRes => {
+      timeout(10000),
+      map(vRes => {
         const v = vRes.items[0];
-        const channelId = v.snippet.channelId;
-
-        return this.http.get<any>(`${this.BASE}/search`, {
-          params: {
-            part: 'snippet',
-            channelId: channelId,
-            type: 'video',
-            maxResults: '12',
-            order: 'viewCount',
-            key: this.KEY
-          }
-        }).pipe(
-          map(rRes => {
-            const related: PipedVideo[] = (rRes.items || [])
-              .filter((r: any) => r.id.videoId !== videoId)
-              .map((r: any) => ({
-                url: `/watch?v=${r.id.videoId}`,
-                title: r.snippet.title,
-                thumbnail: this.getBestThumb(r.id.videoId),
-                uploaderName: r.snippet.channelTitle,
-                uploaderUrl: r.snippet.channelId,
-                uploadedDate: r.snippet.publishedAt?.substring(0, 10),
-                duration: 0,
-                views: 0
-              }));
-
-            return {
-              title: v.snippet.title,
-              description: v.snippet.description,
-              uploader: v.snippet.channelTitle,
-              uploaderUrl: v.snippet.channelId,
-              uploaderAvatar: v.snippet.thumbnails?.default?.url ?? '',
-              uploaderSubscriberCount: 0,
-              thumbnailUrl: this.getBestThumb(videoId),
-              duration: this.parseDuration(v.contentDetails?.duration),
-              views: parseInt(v.statistics?.viewCount ?? '0'),
-              likes: parseInt(v.statistics?.likeCount ?? '0'),
-              dislikes: 0,
-              relatedStreams: related
-            };
-          })
-        );
-      })
+        return {
+          title: v.snippet.title,
+          description: v.snippet.description,
+          uploader: v.snippet.channelTitle,
+          uploaderUrl: v.snippet.channelId,
+          uploaderAvatar: v.snippet.thumbnails?.default?.url ?? '',
+          uploaderSubscriberCount: 0,
+          thumbnailUrl: this.getBestThumb(videoId),
+          duration: this.parseDuration(v.contentDetails?.duration),
+          views: parseInt(v.statistics?.viewCount ?? '0'),
+          likes: parseInt(v.statistics?.likeCount ?? '0'),
+          dislikes: 0,
+          relatedStreams: []
+        };
+      }),
+      catchError(() => of({
+        title: '', description: '', uploader: '', uploaderUrl: '',
+        uploaderAvatar: '', uploaderSubscriberCount: 0, thumbnailUrl: '',
+        duration: 0, views: 0, likes: 0, dislikes: 0, relatedStreams: []
+      }))
     );
   }
 
   private getBestThumb(videoId: string): string {
-    return `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+    return `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`;
   }
 
   private mapVideo(v: any): PipedVideo {

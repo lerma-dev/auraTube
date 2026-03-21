@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PipedService, PipedVideo } from '../../services/piped.service';
 import { VideoCardComponent } from '../../components/video-card/video-card.component';
@@ -14,7 +14,6 @@ export class HomeComponent implements OnInit {
   videos: PipedVideo[] = [];
   loading = true;
   error = '';
-  skeletons = Array(12).fill(0);
 
   selectedRegion = 'MX';
   regions = [
@@ -27,7 +26,10 @@ export class HomeComponent implements OnInit {
 
   private timeoutId: any;
 
-  constructor(private piped: PipedService) {}
+  constructor(
+    private piped: PipedService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void { this.load(); }
 
@@ -36,25 +38,27 @@ export class HomeComponent implements OnInit {
     this.error = '';
     this.videos = [];
 
-    // Timeout de 8 segundos
     this.timeoutId = setTimeout(() => {
       if (this.loading) {
         this.loading = false;
         this.error = 'La API tardó demasiado. Intenta de nuevo.';
+        this.cdr.detectChanges();
       }
-    }, 8000);
+    }, 10000);
 
     this.piped.getTrending(this.selectedRegion).subscribe({
       next: (data) => {
         clearTimeout(this.timeoutId);
-        this.videos = data.filter(v => !v.isShort);
+        this.videos = data;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         clearTimeout(this.timeoutId);
         console.log('Error:', err);
         this.error = 'No se pudo conectar. Intenta de nuevo.';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
